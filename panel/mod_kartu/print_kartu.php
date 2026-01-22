@@ -1,0 +1,126 @@
+<style type="text/css">
+    .ttd {
+        position: absolute;
+        z-index: -1;
+    }
+</style>
+<?php
+require("../../config/config.default.php");
+require("../../config/config.function.php");
+require("../../config/functions.crud.php");
+(isset($_SESSION['id_pengawas'])) ? $id_pengawas = $_SESSION['id_pengawas'] : $id_pengawas = 0;
+($id_pengawas == 0) ? header('location:index.php') : null;
+$id_kelas = @$_GET['id_kelas'];
+if (date('m') >= 7 and date('m') <= 12) {
+    $ajaran = date('Y') . "/" . (date('Y') + 1);
+} elseif (date('m') >= 1 and date('m') <= 6) {
+    $ajaran = (date('Y') - 1) . "/" . date('Y');
+}
+$kelas = mysqli_fetch_array(mysqli_query($koneksi, "SELECT * FROM kelas WHERE id_kelas='$id_kelas'"));
+?>
+<style>
+    * {
+        font-size: x-small;
+    }
+
+    .box {
+        border: 1px solid #000;
+        width: 100%;
+        height: 150px;
+    }
+
+    .ukuran {
+        font-size: 15px;
+    }
+
+    .ukuran2 {
+        font-size: 12px;
+    }
+
+    .user {
+        font-size: 15px;
+    }
+</style>
+
+<table width='100%' align='center' cellpadding='10'>
+    <tr>
+        <?php $siswaQ = mysqli_query($koneksi, "SELECT * FROM siswa WHERE id_kelas='$id_kelas' ORDER BY nama ASC"); ?>
+        <?php while ($siswa = mysqli_fetch_array($siswaQ)) : ?>
+            <?php
+            $nopeserta = $siswa['no_peserta'];
+            $no++;
+            ?>
+            <td width='50%'>
+                <div style='width:10.4cm;border:2px solid #666;'>
+                    <table style="text-align:center; width:100%">
+                        <tr>
+                            <td style="text-align:left; vertical-align:middle">
+
+                                <img src='../../foto/logo_tut.svg' height='60px'>
+                            </td>
+                            <td style="text-align:center; vertical-align:middle">
+                                <!-- <b>
+									KARTU PESERTA UJIAN<br>
+									<?= strtoupper($setting['nama_ujian']) ?><BR>
+									TAHUN PELAJARAN <?= $ajaran ?>
+								</b> -->
+                                <b class="ukuran">
+                                    <?= strtoupper($setting['header_kartu']) ?><BR>
+                                    <?= strtoupper($setting['sekolah']) ?><BR>
+                                    TAHUN PELAJARAN <?= $ajaran ?>
+                                </b>
+                            </td>
+                            <td style="text-align:right; vertical-align:middle">
+                                <img src="../../<?= $setting['logo'] ?>" height='60px' />
+                            </td>
+                        </tr>
+                    </table>
+                    <hr>
+                    <table style="text-align:left; width:100%">
+                        <tr>
+                            <td class="ukuran" valign='top' width="40%" style="padding-left:10px;">No Peserta</td>
+                            <td class="ukuran" valign='top'>: <?= $siswa['no_peserta'] ?></td>
+                        </tr>
+                        <tr>
+                            <td class="ukuran" valign='top' style="padding-left:10px;">Nama</td>
+                            <td class="ukuran2" valign='top'>: <?= $siswa['nama'] ?></td>
+                        </tr>
+                        <tr>
+                            <td class="ukuran" valign='top' style="padding-left:10px;">Kelas / Sesi / Ruang</td>
+                            <td class="ukuran" valign='top'>: <?= $kelas['nama'] ?> / Sesi <?= $siswa['sesi'] ?> / <?= $siswa['ruang'] ?></td>
+                        </tr>
+                        <tr>
+                            <td class="ukuran" valign='top' style="padding-left:10px;">Username / Password</td>
+                            <td class="ukuran" valign='top'>:<b class="user"> <?= $siswa['username'] ?></b> / <b class="user"><?= $siswa['password'] ?></b></td>
+                        </tr>
+                        <tr>
+							<td class="ukuran" valign='top' style="padding-left:10px;"></td>
+                            <td class="ukuran" valign='top'>
+								<div style="margin-top: -5px; padding-left: 30px; z-index:1;" class="ttd"><br><img src='<?php echo '../../dist/img/stempel.png' . '?date=' . time(); ?> ?>' height='65px'></div>
+                                <div style="padding-top: 12px; padding-left: 75px;" class="ttd"><br><img src='<?php echo '../../dist/img/ttd.png' . '?date=' . time(); ?> ?>' height='40px'></div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td valign='top'></td>
+                            <td class="ukuran2" valign='top' align='center'>
+								Medan, 5 Mei 2023 <br>
+                                Kepala <?= $setting['sekolah'] ?><br><br>
+                                <br>
+                                <b><?= $setting['kepsek'] ?></b><br>
+
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <?php if (($no % 8) == 0) : ?>
+                    <p style='page-break-after:always;'></p>
+                <?php endif; ?>
+            </td>
+            <?php if (($no % 2) == 0) : ?>
+    </tr>
+    <tr>
+    <?php endif; ?>
+<?php endwhile; ?>
+    </tr>
+</table>
